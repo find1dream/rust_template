@@ -1,0 +1,33 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  docker_build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build static library with Docker image
+      run: docker build -t cross_complie_template . && docker run -v "$(pwd):/app" cross_complie_template
+      
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Rust Nightly       
+      run: rustup override set nightly
+    - name: Build
+      run: make build
+    - name: Run tests
+      run: make test
+    - name: Run benchmark
+      run : make bench
